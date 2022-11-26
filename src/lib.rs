@@ -1,62 +1,77 @@
-use std::collections::HashMap;
-
-use anyhow::Context;
-use proc_macro::{TokenStream, TokenTree};
-use quote::{quote, quote_spanned, TokenStreamExt, ToTokens, __private::ext::RepToTokensExt};
-use syn::{parse_macro_input, Expr, Ident, parse::{Parse, ParseStream, self}, Lifetime, Token, ExprArray, ExprAssign, ExprAwait, ExprBinary, ExprBox, ExprCall, ExprCast, ExprClosure, ExprAsync, ExprContinue, ExprField, ExprIndex, ExprLet, ExprMacro, ExprMethodCall, ExprPath, ExprRange, ExprReference, ExprRepeat, ExprReturn, ExprStruct, ExprTry, ExprTuple, ExprType, ExprUnary, punctuated::Punctuated, token::Comma, Label, ExprBreak, spanned::Spanned};
-use proc_macro2::{Span, Group, Spacing};
+use proc_macro::TokenStream;
+use quote::{quote, TokenStreamExt, ToTokens};
+use syn::{parse_macro_input, Ident, parse::{Parse, ParseStream}, Lifetime, Token, punctuated::Punctuated, Label};
+use proc_macro2::{Span, Group, Delimiter};
 use heck::AsPascalCase;
 
-
-struct GotoStmt {
-    goto: Ident,
-    target: Lifetime,
+fn pascalize(ident: &Ident) -> Ident {
+    Ident::new(&AsPascalCase(&ident.to_string()).to_string() , ident.span())
 }
 
-impl GotoStmt {
-    fn to_break(self) -> ExprContinue {
-        todo!()
-    }
-}
+#[derive(Debug)]
+struct GotoBlockContents(proc_macro2::TokenStream);
 
-impl Parse for GotoStmt {
-    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let goto: Ident = input.parse()?;
-        let lt: Lifetime = input.parse()?;
-        Ok(GotoStmt{goto, target: lt})
-    }
-}
-
-struct GotoBlock{group: Group}
-
-impl ToTokens for GotoBlock {
-    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-        let group = &self.group;
-        let mut stream = group.stream().into_iter();
-        while let Some(token) = stream.next() {
+impl Parse for GotoBlockContents {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let mut tokens = proc_macro2::TokenStream::new();
+        while let Ok(token) = input.parse::<proc_macro2::TokenTree>() {
             let tt = match token {
                 proc_macro2::TokenTree::Group(grp) => {
                     let delim = grp.delimiter();
-                    let strm = GotoBlock{group: grp}.to_token_stream();
-                    let mut grp = Group::new(delim, strm);
-                    grp.set_span(grp.span());
+                    let span = grp.span();
+                    let contents: GotoBlockContents = syn::parse2(grp.stream())?;
+                    let mut grp = Group::new(delim, contents.0);
+                    grp.set_span(span);
                     proc_macro2::TokenTree::Group(grp)
                 },
                 proc_macro2::TokenTree::Ident(ref ident) => {
                     if ident.to_string() == "goto" {
-                        let lt: Lifetime = match syn::parse2(stream.collect()) {
-                            Ok(lt) => lt,
-                            Err(e) => return tokens.append_all(e.into_compile_error()),
-                        };
-                        todo!("Ree")
+                        println!("goto_found");
+                        let lt: Lifetime = input.parse().map_err(|e| syn::Error::new(e.span(), "Invalid syntax for goto statement"))?;
+                        let variant = pascalize(&lt.ident).clone();
+                        syn::parse2(quote!(
+                            {
+                                goto = States::#variant;
+                                continue 'goto
+                            }
+                        )).expect("This should parse as a group")
+                    } else if ident.to_string() == "safe_goto" {
+                        return Err(syn::Error::new(ident.span(), "using safe_goto inside safe_goto is not allowed"));
                     } else {
                         proc_macro2::TokenTree::Ident(ident.clone())
                     }
                 },
                 tt => tt
             };
+            println!("{tt:?}");
             tokens.append(tt);
         }
+        Ok(GotoBlockContents(tokens))
+    }
+}
+
+impl ToTokens for GotoBlock {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        let GotoBlock{contents, delimiter} = self;
+        tokens.append(Group::new(delimiter.clone(), contents.0.clone()));
+    }
+}
+
+#[derive(Debug)]
+struct GotoBlock{delimiter: Delimiter, contents: GotoBlockContents}
+
+impl From<GotoBlock> for Group {
+    fn from(gtb: GotoBlock) -> Self {
+        Group::new(gtb.delimiter, gtb.contents.0)
+    }
+}
+
+impl Parse for GotoBlock {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let group: Group = input.parse()?;
+        let delimiter = group.delimiter();
+        let contents: GotoBlockContents = syn::parse2(group.stream())?;
+        Ok(GotoBlock{delimiter, contents})
     }
 }
 
@@ -68,8 +83,8 @@ struct GotoBranch {
 impl Parse for GotoBranch {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let lab: Label = input.parse()?;
-        let group: Group = input.parse()?;
-        Ok(GotoBranch{lab, e: GotoBlock{group}})
+        let e: GotoBlock = input.parse()?;
+        Ok(GotoBranch{lab, e})
     }
 }
 
@@ -105,17 +120,19 @@ pub fn safe_goto(t: TokenStream) -> TokenStream {
         return syn::Error::new(Span::call_site(), "missing \'begin label").to_compile_error().into();
     }
     let states_enum = Ident::new("States", Span::call_site());
-    let variants: Vec<_> = input.labels().map(|ident| Ident::new(&AsPascalCase(&ident.name.to_string()).to_string() , ident.name.span())).collect();
+    let variants: Vec<_> = input.labels().map(|label| pascalize(&label.name.ident)).collect();
     let blocks = input.0.into_iter().map(|branch| branch.e);
     quote!(
-        enum #states_enum {
-            #(#variants),*
-        }
-        println!("hello");
-        let state = #states_enum::Begin;
-        'goto: loop {
-            match state {
-                #(#states_enum::#variants => {#blocks}),*
+        {
+            enum #states_enum {
+                #(#variants),*
+            }
+
+            let mut goto = #states_enum::Begin;
+            'goto: loop {
+                break match goto {
+                    #(#states_enum::#variants => #blocks),*
+                }
             }
         }
     ).into()
