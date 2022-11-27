@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{quote, TokenStreamExt, ToTokens};
-use syn::{parse_macro_input, Ident, parse::{Parse, ParseStream}, Lifetime, Token, punctuated::Punctuated, Label};
+use syn::{parse_macro_input, Ident, parse::{Parse, ParseStream, Parser}, Token, punctuated::Punctuated, FnArg, PatType, spanned::Spanned, Pat};
 use proc_macro2::{Span, Group, Delimiter};
 use heck::AsPascalCase;
 
@@ -26,12 +26,20 @@ impl Parse for GotoBlockContents {
                 },
                 proc_macro2::TokenTree::Ident(ref ident) => {
                     if ident.to_string() == "goto" {
-                        println!("goto_found");
-                        let lt: Lifetime = input.parse().map_err(|e| syn::Error::new(e.span(), "Invalid syntax for goto statement"))?;
-                        let variant = pascalize(&lt.ident).clone();
+                        let id: Ident = input.parse().map_err(|e| syn::Error::new(e.span(), "Invalid syntax for goto statement"))?;
+                        let variant = pascalize(&id).clone();
+                        let call: Group = input.parse()?;
+                        if call.delimiter() != Delimiter::Parenthesis {
+                            return Err(syn::Error::new(call.span_open(), "expected `(`"))
+                        }
+                        let call = if call.stream().is_empty() {
+                            proc_macro2::TokenStream::new()
+                        } else {
+                            quote!(#call)
+                        };
                         syn::parse2(quote!(
                             {
-                                goto = States::#variant;
+                                goto = States::#variant #call;
                                 continue 'goto
                             }
                         )).expect("This should parse as a group")
@@ -43,7 +51,6 @@ impl Parse for GotoBlockContents {
                 },
                 tt => tt
             };
-            println!("{tt:?}");
             tokens.append(tt);
         }
         Ok(GotoBlockContents(tokens))
@@ -75,35 +82,132 @@ impl Parse for GotoBlock {
     }
 }
 
+struct VariantArgsDelimited{contents: Punctuated::<PatType, Token!(,)>}
+
+impl Parse for VariantArgsDelimited {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let group: Group = input.parse()?;
+        let contents = if group.delimiter() == Delimiter::Parenthesis {
+            let parser = Punctuated::<FnArg, Token![,]>::parse_terminated;
+            parser.parse2(group.stream())?
+        } else {
+            return Err(syn::Error::new(group.span_open(), "expected `(`"))
+        };
+        let mut new_contents = Punctuated::<PatType, Token!(,)>::new();
+        for pair in contents.pairs() {
+            if let FnArg::Typed(pat) = pair.value() {
+                new_contents.push_value(pat.clone())
+            } else {
+                return Err(syn::Error::new(contents.span(), "unexpected `self`"))
+            }
+            if let Some(&&punct) = pair.punct() {
+                new_contents.push_punct(punct)
+            }
+        }
+        Ok(VariantArgsDelimited{contents: new_contents})
+    }
+}
+
+impl ToTokens for VariantArgsDelimited {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        if !self.contents.is_empty() {
+            let args = &self.contents;
+            tokens.append_all(quote!(
+                (#args)
+            ))
+        }
+    }
+}
+
 struct GotoBranch {
-    lab: Label,
-    e: GotoBlock
+    id: Ident,
+    block: GotoBlock,
+    variant_args: VariantArgsDelimited
 }
 
 impl Parse for GotoBranch {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let lab: Label = input.parse()?;
-        let e: GotoBlock = input.parse()?;
-        Ok(GotoBranch{lab, e})
+        let id = input.parse()?;
+        let variant_args = input.parse()?;
+        let block = input.parse()?;
+        Ok(GotoBranch{id, block, variant_args})
     }
 }
 
 struct SafeGoto(Punctuated<GotoBranch, Token!(,)>);
 
+struct VariantTypesDelimited{contents: Punctuated<Box<syn::Type>, Token!(,)>}
+
+impl ToTokens for VariantTypesDelimited {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        println!("{}", self.contents.is_empty());
+        if !self.contents.is_empty() {
+            let args = &self.contents;
+            tokens.append_all(quote!(
+                (#args)
+            ))
+        }
+    }
+}
+
+struct VariantPatsDelimited{contents: Punctuated<Box<Pat>, Token!(,)>}
+
+impl ToTokens for VariantPatsDelimited {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        println!("{}", self.contents.is_empty());
+        if !self.contents.is_empty() {
+            let args = &self.contents;
+            tokens.append_all(quote!(
+                (#args)
+            ))
+        }
+    }
+}
+
 impl SafeGoto {
-    fn labels(&self) -> impl Iterator<Item = &Label> {
-        self.0.iter().map(|branch| &branch.lab)
+    fn idents(&self) -> impl Iterator<Item = &Ident> {
+        self.0.iter().map(|branch| &branch.id)
     }
 
-    fn label_lifetimes(&self) -> impl Iterator<Item = &Lifetime> {
-        self.labels().map(|label| &label.name)
+    fn variant_args(&self) -> impl Iterator<Item = &VariantArgsDelimited> {
+        self.0.iter().map(|branch| &branch.variant_args)
+    }
+
+    fn variant_types(&self) -> impl Iterator<Item = VariantTypesDelimited> + '_ {
+        self.0.iter().map(|branch| {
+            let mut ret = Punctuated::new();
+            for pair in branch.variant_args.contents.pairs() {
+                ret.push_value(pair.value().ty.clone());
+                if let Some(&&punct) = pair.punct() {
+                    ret.push_punct(punct)
+                }
+            }
+            VariantTypesDelimited{contents: ret}
+        })
+    }
+
+    fn variant_pats(&self) -> impl Iterator<Item = VariantPatsDelimited> + '_ {
+        self.0.iter().map(|branch| {
+            let mut ret = Punctuated::new();
+            for pair in branch.variant_args.contents.pairs() {
+                ret.push_value(pair.value().pat.clone());
+                if let Some(&&punct) = pair.punct() {
+                    ret.push_punct(punct)
+                }
+            }
+            VariantPatsDelimited{contents: ret}
+        })
+    }
+
+    fn blocks(&self) -> impl Iterator<Item = &GotoBlock> {
+        self.0.iter().map(|branch| &branch.block)
     }
 }
 
 impl Parse for SafeGoto {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let ret = SafeGoto(input.parse_terminated::<GotoBranch, Token!(,)>(GotoBranch::parse)?);
-        let lifetimes: Vec<_> = ret.label_lifetimes().collect();
+        let lifetimes: Vec<_> = ret.idents().collect();
         for i in 0..lifetimes.len() {
             if lifetimes[i+1..].contains(&lifetimes[i]) {
                 return Err(syn::Error::new(lifetimes[i].span(), "label occurs more than once"))
@@ -116,26 +220,29 @@ impl Parse for SafeGoto {
 #[proc_macro]
 pub fn safe_goto(t: TokenStream) -> TokenStream {
     let input = parse_macro_input!(t as SafeGoto);
-    if input.label_lifetimes().find(|&lt| lt == &Lifetime::new("'begin", Span::call_site())).is_none() {
+    if input.idents().find(|&id| id.to_string() == "begin").is_none() {
         return syn::Error::new(Span::call_site(), "missing \'begin label").to_compile_error().into();
     }
     let states_enum = Ident::new("States", Span::call_site());
-    let variants: Vec<_> = input.labels().map(|label| pascalize(&label.name.ident)).collect();
-    let blocks = input.0.into_iter().map(|branch| branch.e);
-    quote!(
+    let variants: Vec<_> = input.idents().map(pascalize).collect();
+    let variant_args = input.variant_args();
+    let variant_pats = input.variant_pats();
+    let variant_types = input.variant_types();
+    let blocks = input.blocks();
+    dbg!(quote!(
         {
             enum #states_enum {
-                #(#variants),*
+                #(#variants #variant_types),*
             }
 
             let mut goto = #states_enum::Begin;
             'goto: loop {
                 break match goto {
-                    #(#states_enum::#variants => #blocks),*
+                    #(#states_enum::#variants #variant_pats => #blocks),*
                 }
             }
         }
-    ).into()
+    ).into())
 }
 
 
