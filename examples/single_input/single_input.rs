@@ -18,7 +18,7 @@ fn foo(n: i32) -> i32 {
             n -= 83;
             if n % 43 == 0 {
                 goto third(n)
-            } else if n > 120{
+            } else if n > 120 {
                 goto first(n)
             }
             n
@@ -27,7 +27,7 @@ fn foo(n: i32) -> i32 {
             n -= 93;
             if n % 53 == 0 {
                 goto first(n)
-            } else if n > 100{
+            } else if n > 100 {
                 goto second(n)
             }
             n

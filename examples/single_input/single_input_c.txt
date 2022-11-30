@@ -1,0 +1,117 @@
+Iterations:        1000
+Instructions:      38000
+Total Cycles:      9900
+Total uOps:        40000
+
+Dispatch Width:    6
+uOps Per Cycle:    4.04
+IPC:               3.84
+Block RThroughput: 6.7
+
+
+Instruction Info:
+[1]: #uOps
+[2]: Latency
+[3]: RThroughput
+[4]: MayLoad
+[5]: MayStore
+[6]: HasSideEffects (U)
+
+[1]    [2]    [3]    [4]    [5]    [6]    Instructions:
+ 1      1     0.25                        addl	$-73, %edi
+ 1      1     0.25                        movslq	%edi, %rax
+ 1      3     1.00                        imulq	$1041204193, %rax, %rcx
+ 1      1     0.25                        movq	%rcx, %rdx
+ 1      1     0.50                        shrq	$63, %rdx
+ 1      1     0.50                        sarq	$35, %rcx
+ 1      1     0.25                        addl	%edx, %ecx
+ 1      3     1.00                        imull	$33, %ecx, %ecx
+ 1      1     0.25                        cmpl	%ecx, %eax
+ 1      1     0.50                        je	.LBB0_5
+ 1      1     0.25                        cmpl	$150, %edi
+ 1      1     0.50                        jle	.LBB0_7
+ 1      1     0.25                        addl	$-93, %edi
+ 1      1     0.25                        movslq	%edi, %rax
+ 1      3     1.00                        imulq	$1296593901, %rax, %rcx
+ 1      1     0.25                        movq	%rcx, %rdx
+ 1      1     0.50                        shrq	$63, %rdx
+ 1      1     0.50                        sarq	$36, %rcx
+ 1      1     0.25                        addl	%edx, %ecx
+ 1      3     1.00                        imull	$53, %ecx, %ecx
+ 1      1     0.25                        cmpl	%ecx, %eax
+ 1      1     0.50                        je	.LBB0_1
+ 1      1     0.25                        cmpl	$100, %edi
+ 1      1     0.50                        jle	.LBB0_7
+ 1      1     0.25                        addl	$-83, %edi
+ 1      1     0.25                        movslq	%edi, %rax
+ 1      3     1.00                        imulq	$799063683, %rax, %rcx
+ 1      1     0.25                        movq	%rcx, %rdx
+ 1      1     0.50                        shrq	$63, %rdx
+ 1      1     0.50                        sarq	$35, %rcx
+ 1      1     0.25                        addl	%edx, %ecx
+ 1      3     1.00                        imull	$43, %ecx, %ecx
+ 1      1     0.25                        cmpl	%ecx, %eax
+ 1      1     0.50                        je	.LBB0_3
+ 1      1     0.25                        cmpl	$120, %edi
+ 1      1     0.50                        jg	.LBB0_1
+ 1      1     0.25                        movl	%edi, %eax
+ 3      7     1.00                  U     retq
+
+
+Resources:
+[0]   - SKLDivider
+[1]   - SKLFPDivider
+[2]   - SKLPort0
+[3]   - SKLPort1
+[4]   - SKLPort2
+[5]   - SKLPort3
+[6]   - SKLPort4
+[7]   - SKLPort5
+[8]   - SKLPort6
+[9]   - SKLPort7
+
+
+Resource pressure per iteration:
+[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    
+ -      -     9.78   9.67   0.50   0.50    -     9.78   9.78    -     
+
+Resource pressure by instruction:
+[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    Instructions:
+ -      -     0.11   0.22    -      -      -     0.22   0.45    -     addl	$-73, %edi
+ -      -     0.11   0.11    -      -      -     0.34   0.44    -     movslq	%edi, %rax
+ -      -      -     1.00    -      -      -      -      -      -     imulq	$1041204193, %rax, %rcx
+ -      -      -     0.11    -      -      -     0.89    -      -     movq	%rcx, %rdx
+ -      -     0.78    -      -      -      -      -     0.22    -     shrq	$63, %rdx
+ -      -     0.44    -      -      -      -      -     0.56    -     sarq	$35, %rcx
+ -      -      -     0.11    -      -      -     0.67   0.22    -     addl	%edx, %ecx
+ -      -      -     1.00    -      -      -      -      -      -     imull	$33, %ecx, %ecx
+ -      -      -     0.11    -      -      -     0.44   0.44    -     cmpl	%ecx, %eax
+ -      -     0.56    -      -      -      -      -     0.44    -     je	.LBB0_5
+ -      -     0.33    -      -      -      -     0.67    -      -     cmpl	$150, %edi
+ -      -     0.67    -      -      -      -      -     0.33    -     jle	.LBB0_7
+ -      -     0.22    -      -      -      -     0.33   0.45    -     addl	$-93, %edi
+ -      -      -     0.33    -      -      -     0.67    -      -     movslq	%edi, %rax
+ -      -      -     1.00    -      -      -      -      -      -     imulq	$1296593901, %rax, %rcx
+ -      -     0.11   0.11    -      -      -     0.67   0.11    -     movq	%rcx, %rdx
+ -      -     0.89    -      -      -      -      -     0.11    -     shrq	$63, %rdx
+ -      -     0.56    -      -      -      -      -     0.45    -     sarq	$36, %rcx
+ -      -      -     0.22    -      -      -     0.55   0.22    -     addl	%edx, %ecx
+ -      -      -     1.00    -      -      -      -      -      -     imull	$53, %ecx, %ecx
+ -      -      -     0.11    -      -      -     0.78   0.11    -     cmpl	%ecx, %eax
+ -      -     0.67    -      -      -      -      -     0.33    -     je	.LBB0_1
+ -      -     0.33   0.11    -      -      -     0.22   0.33    -     cmpl	$100, %edi
+ -      -     0.33    -      -      -      -      -     0.67    -     jle	.LBB0_7
+ -      -     0.33   0.11    -      -      -     0.11   0.44    -     addl	$-83, %edi
+ -      -     0.11   0.22    -      -      -     0.22   0.44    -     movslq	%edi, %rax
+ -      -      -     1.00    -      -      -      -      -      -     imulq	$799063683, %rax, %rcx
+ -      -      -     0.44    -      -      -     0.56    -      -     movq	%rcx, %rdx
+ -      -     0.78    -      -      -      -      -     0.22    -     shrq	$63, %rdx
+ -      -     0.56    -      -      -      -      -     0.45    -     sarq	$35, %rcx
+ -      -     0.11   0.22    -      -      -     0.56   0.11    -     addl	%edx, %ecx
+ -      -      -     1.00    -      -      -      -      -      -     imull	$43, %ecx, %ecx
+ -      -      -     0.22    -      -      -     0.67   0.11    -     cmpl	%ecx, %eax
+ -      -     0.67    -      -      -      -      -     0.33    -     je	.LBB0_3
+ -      -     0.33   0.22    -      -      -     0.44    -      -     cmpl	$120, %edi
+ -      -     0.44    -      -      -      -      -     0.56    -     jg	.LBB0_1
+ -      -     0.11   0.44    -      -      -     0.22   0.22    -     movl	%edi, %eax
+ -      -     0.22   0.22   0.50   0.50    -     0.56   1.00    -     retq
