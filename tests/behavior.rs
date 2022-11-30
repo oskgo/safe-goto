@@ -21,6 +21,20 @@ fn test_goto_args() {
 }
 
 #[test]
+fn test_mut() {
+    let x = safe_goto! {
+        begin() {
+            goto other(2)
+        },
+        other(mut n: i32) {
+            n += 1;
+            n
+        }
+    };
+    assert_eq!(x, 3)
+}
+
+#[test]
 fn test_internals() {
     fn foo(x: i32, y: i32) -> Option<i32> {
         if x + 40 <= y {
