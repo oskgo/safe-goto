@@ -79,6 +79,7 @@ impl ToTokens for GotoBlock {
     }
 }
 
+/// A possibly invalid Rust block possibly containing goto statements
 #[derive(Debug)]
 struct GotoBlock {
     delimiter: Delimiter,
@@ -103,6 +104,7 @@ impl Parse for GotoBlock {
     }
 }
 
+/// Comma separated list of typed patterns used as arguments for each goto block
 struct VariantArgsDelimited {
     contents: Punctuated<PatType, Token!(,)>,
 }
@@ -144,6 +146,7 @@ impl ToTokens for VariantArgsDelimited {
     }
 }
 
+/// A branch that can be a target of a goto statement
 struct GotoBranch {
     id: Ident,
     block: GotoBlock,
@@ -163,8 +166,7 @@ impl Parse for GotoBranch {
     }
 }
 
-struct SafeGoto(Punctuated<GotoBranch, Token!(,)>);
-
+/// Comma separated list of types that are arguments to a goto branch. Used for constructing enum
 struct VariantTypesDelimited {
     contents: Punctuated<Box<syn::Type>, Token!(,)>,
 }
@@ -180,6 +182,7 @@ impl ToTokens for VariantTypesDelimited {
     }
 }
 
+/// Comma separated list of patterns that are inputs to a goto branch. Used for matching
 struct VariantPatsDelimited {
     contents: Punctuated<Box<Pat>, Token!(,)>,
 }
@@ -194,6 +197,9 @@ impl ToTokens for VariantPatsDelimited {
         }
     }
 }
+
+/// half-parsed valid input of the `safe_goto` macro
+struct SafeGoto(Punctuated<GotoBranch, Token!(,)>);
 
 impl SafeGoto {
     fn idents(&self) -> impl Iterator<Item = &Ident> {
@@ -239,7 +245,7 @@ impl Parse for SafeGoto {
             if lifetimes[i + 1..].contains(&lifetimes[i]) {
                 return Err(syn::Error::new(
                     lifetimes[i].span(),
-                    "label occurs more than once",
+                    "block label occurs more than once",
                 ));
             }
         }
@@ -247,11 +253,33 @@ impl Parse for SafeGoto {
     }
 }
 
+/// Executes the contained Rust code with possibly irreducible control flow
+///
+/// ```
+/// safe_goto!{
+///     begin() {
+///         goto s1(3)
+///     },
+///     s1(n: i32) {
+///         n + 1
+///     }
+/// }
+/// ```
+///
+/// There must be a begin block with no arguments. Nested safe_goto's are not allowed,
+/// though function calls can be used to get around this limitation.
+/// Execution that leaves any of the goto blocks will continue outside the macro,
+/// returning the value at the end of the final block.
+///
+/// # Safety
+///
+/// The macro does not generate unsafe code unless given unsafe code as input.
+/// There are no guarantees for how the macro will interact with unsafe code.
 #[proc_macro]
 pub fn safe_goto(t: TokenStream) -> TokenStream {
     let input = parse_macro_input!(t as SafeGoto);
     if !input.idents().any(|id| id == "begin") {
-        return syn::Error::new(Span::call_site(), "missing \'begin label")
+        return syn::Error::new(Span::call_site(), "expected `begin` block")
             .to_compile_error()
             .into();
     }
