@@ -1,6 +1,6 @@
 # safe-goto
 
-Emulating a safe goto-like instruction in Rust according to the spirit of [the "Safe goto with value" pre-RFC from IRLO](https://internals.rust-lang.org/t/pre-rfc-safe-goto-with-value/14470)
+Emulating a safe goto-like instruction in Rust in the spirit of [the "Safe goto with value" pre-RFC from IRLO](https://internals.rust-lang.org/t/pre-rfc-safe-goto-with-value/14470)
 
 The crate contains a single macro, `safe_goto`, which emulates goto with value using a loop wrapping a match on an enum.
 
