@@ -13,8 +13,8 @@ The purpose of this crate is two-fold:
 
 Non-goals:
 
-- The library does not aim for maximal performance. Doing inline assembly defeats the purpose
-- The library does not aim to be a stable foundation for others to build upon. The syntax may change to reflect what might eventually be implemented in the stdlib or as part of the language. Also, the macro is very brittle since it has to handle near-arbitrary rust code
+- The crate does not aim for maximal performance. Doing inline assembly defeats the purpose
+- The crate does not aim to be a stable foundation for others to build upon. The syntax may change to reflect what might eventually be implemented in the stdlib or as part of the language. Also, the macro is very brittle since it has to handle near-arbitrary rust code
 
 ## Examples
 
