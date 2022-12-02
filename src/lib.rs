@@ -255,7 +255,9 @@ impl Parse for SafeGoto {
 
 /// Executes the contained Rust code with possibly irreducible control flow
 ///
+/// # Example
 /// ```
+/// use safe_goto::safe_goto;
 /// safe_goto!{
 ///     begin() {
 ///         goto s1(3)
@@ -263,13 +265,33 @@ impl Parse for SafeGoto {
 ///     s1(n: i32) {
 ///         n + 1
 ///     }
-/// }
+/// };
+/// ```
+/// The invocation above generates the following code:
+/// ```
+/// {
+///     enum States {
+///         Begin,
+///         S1(i32)
+///     }
+///     let mut goto = States::Begin;
+///     'goto: loop {
+///         break match goto {
+///             States::Begin => {
+///                 {goto = States::S1(3); continue 'goto}
+///             },
+///             States::S1(n) => {
+///                 n + 1
+///             }
+///         }
+///     }
+/// };
 /// ```
 ///
 /// There must be a begin block with no arguments. Nested safe_goto's are not allowed,
 /// though function calls can be used to get around this limitation.
-/// Execution that leaves any of the goto blocks will continue outside the macro,
-/// returning the value at the end of the final block.
+/// Execution that exits any of the goto blocks will return from the macro
+/// with the value at the end of the final block executed.
 ///
 /// # Safety
 ///
