@@ -1,6 +1,7 @@
 use safe_goto::safe_goto;
 
 #[test]
+#[allow(unreachable_code)]
 fn test_minimal() {
     safe_goto! {
         begin() {}
@@ -8,6 +9,7 @@ fn test_minimal() {
 }
 
 #[test]
+#[allow(unreachable_code)]
 fn test_call() {
     safe_goto! {
         begin() {Vec::<()>::new()}
@@ -15,6 +17,7 @@ fn test_call() {
 }
 
 #[test]
+#[allow(unreachable_code)]
 fn test_print() {
     safe_goto! {
         begin() {println!("foo")}

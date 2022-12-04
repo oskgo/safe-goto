@@ -1,6 +1,7 @@
 use safe_goto::safe_goto;
 
 #[test]
+#[allow(unreachable_code)]
 fn test_output() {
     assert_eq! {1, safe_goto!{
         begin() {1}
