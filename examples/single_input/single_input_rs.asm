@@ -1,56 +1,41 @@
 foo:
-        xorl    %edx, %edx
-        leaq    .LJTI0_0(%rip), %r8
+        movl    %edi, %eax
+        xorl    %ecx, %ecx
 .LBB0_1:
-        movl    %esi, %eax
-        movl    %edx, %edx
-        movslq  (%r8,%rdx,4), %rcx
-        addq    %r8, %rcx
-        movl    %edi, %esi
-        movl    $1, %edx
-        jmpq    *%rcx
-.LBB0_7:
-        addl    $-73, %eax
-        imull   $1041204193, %eax, %ecx
-        addl    $65075262, %ecx
-        movl    $2, %edx
-        movl    %eax, %esi
-        cmpl    $130150525, %ecx
-        jb      .LBB0_1
-        movl    $3, %edx
-        movl    %eax, %esi
-        cmpl    $150, %eax
-        jg      .LBB0_1
-        jmp     .LBB0_4
-.LBB0_5:
+        testl   %ecx, %ecx
+        je      .LBB0_5
+        cmpl    $1, %ecx
+        jne     .LBB0_8
         addl    $-83, %eax
-        imull   $799063683, %eax, %ecx
-        addl    $49941480, %ecx
-        movl    $3, %edx
-        movl    %eax, %esi
-        cmpl    $99882961, %ecx
+        imull   $799063683, %eax, %edx
+        addl    $49941480, %edx
+        movl    $2, %ecx
+        cmpl    $99882961, %edx
         jb      .LBB0_1
-        movl    %eax, %esi
-        movl    $1, %edx
+        movl    $0, %ecx
         cmpl    $120, %eax
         jg      .LBB0_1
-        jmp     .LBB0_4
-.LBB0_2:
-        addl    $-93, %eax
-        imull   $-1944890851, %eax, %ecx
-        addl    $40518559, %ecx
-        movl    %eax, %esi
-        movl    $1, %edx
-        cmpl    $81037119, %ecx
+        jmp     .LBB0_7
+.LBB0_5:
+        addl    $-73, %eax
+        imull   $1041204193, %eax, %edx
+        addl    $65075262, %edx
+        movl    $1, %ecx
+        cmpl    $130150525, %edx
         jb      .LBB0_1
-        movl    $2, %edx
-        movl    %eax, %esi
+        movl    $2, %ecx
+        cmpl    $150, %eax
+        jg      .LBB0_1
+        jmp     .LBB0_7
+.LBB0_8:
+        addl    $-93, %eax
+        imull   $-1944890851, %eax, %edx
+        addl    $40518559, %edx
+        movl    $0, %ecx
+        cmpl    $81037119, %edx
+        jb      .LBB0_1
+        movl    $1, %ecx
         cmpl    $100, %eax
         jg      .LBB0_1
-.LBB0_4:
+.LBB0_7:
         retq
-.LJTI0_0:
-        .long   .LBB0_1-.LJTI0_0
-        .long   .LBB0_7-.LJTI0_0
-        .long   .LBB0_5-.LJTI0_0
-        .long   .LBB0_2-.LJTI0_0

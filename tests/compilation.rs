@@ -57,3 +57,16 @@ fn test_goto_args() {
         }
     }
 }
+
+#[test]
+fn test_references() {
+    safe_goto! {
+        begin() {
+            let a = &mut 30;
+            goto other()
+        },
+        other() {
+            *a = 10;
+        }
+    }
+}

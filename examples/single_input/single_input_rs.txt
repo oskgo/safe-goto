@@ -1,12 +1,12 @@
-Iterations:        1000
-Instructions:      45000
-Total Cycles:      11009
-Total uOps:        47000
+Iterations:        100
+Instructions:      3600
+Total Cycles:      689
+Total uOps:        3500
 
 Dispatch Width:    6
-uOps Per Cycle:    4.27
-IPC:               4.09
-Block RThroughput: 7.8
+uOps Per Cycle:    5.08
+IPC:               5.22
+Block RThroughput: 5.8
 
 
 Instruction Info:
@@ -18,114 +18,99 @@ Instruction Info:
 [6]: HasSideEffects (U)
 
 [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
- 1      0     0.17                        xorl	%edx, %edx
- 1      1     0.50                        leaq	.LJTI0_0(%rip), %r8
- 1      1     0.25                        movl	%esi, %eax
- 1      1     0.25                        movl	%edx, %edx
- 1      5     0.50    *                   movslq	(%r8,%rdx,4), %rcx
- 1      1     0.25                        addq	%r8, %rcx
- 1      1     0.25                        movl	%edi, %esi
- 1      1     0.25                        movl	$1, %edx
- 1      1     1.00                        jmpq	*%rcx
- 1      1     0.25                        addl	$-73, %eax
- 1      3     1.00                        imull	$1041204193, %eax, %ecx
- 1      1     0.25                        addl	$65075262, %ecx
- 1      1     0.25                        movl	$2, %edx
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        cmpl	$130150525, %ecx
- 1      1     0.50                        jb	.LBB0_1
- 1      1     0.25                        movl	$3, %edx
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        cmpl	$150, %eax
- 1      1     0.50                        jg	.LBB0_1
- 1      1     0.50                        jmp	.LBB0_4
- 1      1     0.25                        addl	$-83, %eax
- 1      3     1.00                        imull	$799063683, %eax, %ecx
- 1      1     0.25                        addl	$49941480, %ecx
- 1      1     0.25                        movl	$3, %edx
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        cmpl	$99882961, %ecx
- 1      1     0.50                        jb	.LBB0_1
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        movl	$1, %edx
- 1      1     0.25                        cmpl	$120, %eax
- 1      1     0.50                        jg	.LBB0_1
- 1      1     0.50                        jmp	.LBB0_4
- 1      1     0.25                        addl	$-93, %eax
- 1      3     1.00                        imull	$-1944890851, %eax, %ecx
- 1      1     0.25                        addl	$40518559, %ecx
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        movl	$1, %edx
- 1      1     0.25                        cmpl	$81037119, %ecx
- 1      1     0.50                        jb	.LBB0_1
- 1      1     0.25                        movl	$2, %edx
- 1      1     0.25                        movl	%eax, %esi
- 1      1     0.25                        cmpl	$100, %eax
- 1      1     0.50                        jg	.LBB0_1
- 3      7     1.00                  U     retq
+ 1      0     0.20                        movl  %edi, %eax
+ 1      2     0.20                        xorl  %ecx, %ecx
+ 1      2     0.20                        testl %ecx, %ecx
+ 1      1     0.50                        je    .LBB0_5
+ 1      1     0.20                        cmpl  $1, %ecx
+ 1      1     0.50                        jne   .LBB0_8
+ 1      1     0.20                        addl  $-83, %eax
+ 1      3     1.00                        imull $799063683, %eax, %edx
+ 1      1     0.20                        addl  $49941480, %edx
+ 1      1     0.20                        movl  $2, %ecx
+ 1      1     0.20                        cmpl  $99882961, %edx
+ 1      1     0.50                        jb    .LBB0_1
+ 1      1     0.20                        movl  $0, %ecx
+ 1      1     0.20                        cmpl  $120, %eax
+ 1      1     0.50                        jg    .LBB0_1
+ 0      0     0.00                        jmp   .LBB0_7
+ 1      1     0.20                        addl  $-73, %eax
+ 1      3     1.00                        imull $1041204193, %eax, %edx
+ 1      1     0.20                        addl  $65075262, %edx
+ 1      1     0.20                        movl  $1, %ecx
+ 1      1     0.20                        cmpl  $130150525, %edx
+ 1      1     0.50                        jb    .LBB0_1
+ 1      1     0.20                        movl  $2, %ecx
+ 1      1     0.20                        cmpl  $150, %eax
+ 1      1     0.50                        jg    .LBB0_1
+ 0      0     0.00                        jmp   .LBB0_7
+ 1      1     0.20                        addl  $-93, %eax
+ 1      3     1.00                        imull $-1944890851, %eax, %edx
+ 1      1     0.20                        addl  $40518559, %edx
+ 1      1     0.20                        movl  $0, %ecx
+ 1      1     0.20                        cmpl  $81037119, %edx
+ 1      1     0.50                        jb    .LBB0_1
+ 1      1     0.20                        movl  $1, %ecx
+ 1      1     0.20                        cmpl  $100, %eax
+ 1      1     0.50                        jg    .LBB0_1
+ 2      7     0.50                  U     retq
 
 
 Resources:
-[0]   - SKLDivider
-[1]   - SKLFPDivider
-[2]   - SKLPort0
-[3]   - SKLPort1
-[4]   - SKLPort2
-[5]   - SKLPort3
-[6]   - SKLPort4
-[7]   - SKLPort5
-[8]   - SKLPort6
-[9]   - SKLPort7
+[0]   - ADLPPort00
+[1]   - ADLPPort01
+[2]   - ADLPPort02
+[3]   - ADLPPort03
+[4]   - ADLPPort04
+[5]   - ADLPPort05
+[6]   - ADLPPort06
+[7]   - ADLPPort07
+[8]   - ADLPPort08
+[9]   - ADLPPort09
+[10]  - ADLPPort10
+[11]  - ADLPPort11
+[12]  - ADLPPortInvalid
 
 
 Resource pressure per iteration:
-[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    
- -      -     11.00  11.00  1.00   1.00    -     11.00  11.00   -     
+[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   [11]   [12]
+6.80   6.80   0.33   0.33    -     6.80   6.80    -      -      -     6.80   0.34    -
 
 Resource pressure by instruction:
-[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    Instructions:
- -      -      -      -      -      -      -      -      -      -     xorl	%edx, %edx
- -      -      -      -      -      -      -     1.00    -      -     leaq	.LJTI0_0(%rip), %r8
- -      -      -     1.00    -      -      -      -      -      -     movl	%esi, %eax
- -      -     1.00    -      -      -      -      -      -      -     movl	%edx, %edx
- -      -      -      -      -     1.00    -      -      -      -     movslq	(%r8,%rdx,4), %rcx
- -      -      -     1.00    -      -      -      -      -      -     addq	%r8, %rcx
- -      -      -      -      -      -      -      -     1.00    -     movl	%edi, %esi
- -      -      -      -      -      -      -     1.00    -      -     movl	$1, %edx
- -      -      -      -      -      -      -      -     1.00    -     jmpq	*%rcx
- -      -     1.00    -      -      -      -      -      -      -     addl	$-73, %eax
- -      -      -     1.00    -      -      -      -      -      -     imull	$1041204193, %eax, %ecx
- -      -     1.00    -      -      -      -      -      -      -     addl	$65075262, %ecx
- -      -      -      -      -      -      -      -     1.00    -     movl	$2, %edx
- -      -     1.00    -      -      -      -      -      -      -     movl	%eax, %esi
- -      -      -     1.00    -      -      -      -      -      -     cmpl	$130150525, %ecx
- -      -     1.00    -      -      -      -      -      -      -     jb	.LBB0_1
- -      -      -      -      -      -      -     1.00    -      -     movl	$3, %edx
- -      -      -      -      -      -      -     1.00    -      -     movl	%eax, %esi
- -      -      -      -      -      -      -      -     1.00    -     cmpl	$150, %eax
- -      -     1.00    -      -      -      -      -      -      -     jg	.LBB0_1
- -      -      -      -      -      -      -      -     1.00    -     jmp	.LBB0_4
- -      -      -      -      -      -      -      -     1.00    -     addl	$-83, %eax
- -      -      -     1.00    -      -      -      -      -      -     imull	$799063683, %eax, %ecx
- -      -     1.00    -      -      -      -      -      -      -     addl	$49941480, %ecx
- -      -      -      -      -      -      -     1.00    -      -     movl	$3, %edx
- -      -      -      -      -      -      -     1.00    -      -     movl	%eax, %esi
- -      -      -     1.00    -      -      -      -      -      -     cmpl	$99882961, %ecx
- -      -     1.00    -      -      -      -      -      -      -     jb	.LBB0_1
- -      -      -     1.00    -      -      -      -      -      -     movl	%eax, %esi
- -      -     1.00    -      -      -      -      -      -      -     movl	$1, %edx
- -      -      -      -      -      -      -      -     1.00    -     cmpl	$120, %eax
- -      -      -      -      -      -      -      -     1.00    -     jg	.LBB0_1
- -      -      -      -      -      -      -      -     1.00    -     jmp	.LBB0_4
- -      -      -      -      -      -      -     1.00    -      -     addl	$-93, %eax
- -      -      -     1.00    -      -      -      -      -      -     imull	$-1944890851, %eax, %ecx
- -      -      -     1.00    -      -      -      -      -      -     addl	$40518559, %ecx
- -      -      -      -      -      -      -     1.00    -      -     movl	%eax, %esi
- -      -      -      -      -      -      -     1.00    -      -     movl	$1, %edx
- -      -      -     1.00    -      -      -      -      -      -     cmpl	$81037119, %ecx
- -      -     1.00    -      -      -      -      -      -      -     jb	.LBB0_1
- -      -      -      -      -      -      -     1.00    -      -     movl	$2, %edx
- -      -      -      -      -      -      -      -     1.00    -     movl	%eax, %esi
- -      -      -      -      -      -      -     1.00    -      -     cmpl	$100, %eax
- -      -     1.00    -      -      -      -      -      -      -     jg	.LBB0_1
- -      -      -     1.00   1.00    -      -      -     1.00    -     retq
+[0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   [11]   [12]   Instructions:
+ -     0.19    -      -      -     0.60   0.01    -      -      -     0.20    -      -     movl %edi, %eax
+ -      -      -      -      -     0.77   0.20    -      -      -     0.03    -      -     xorl %ecx, %ecx
+0.01    -      -      -      -     0.39   0.02    -      -      -     0.58    -      -     testl        %ecx, %ecx
+0.01    -      -      -      -      -     0.99    -      -      -      -      -      -     je   .LBB0_5
+ -     0.39    -      -      -     0.60    -      -      -      -     0.01    -      -     cmpl $1, %ecx
+0.01    -      -      -      -      -     0.99    -      -      -      -      -      -     jne  .LBB0_8
+ -     0.41    -      -      -     0.21    -      -      -      -     0.38    -      -     addl $-83, %eax
+ -     1.00    -      -      -      -      -      -      -      -      -      -      -     imull        $799063683, %eax, %edx
+0.39    -      -      -      -      -      -      -      -      -     0.61    -      -     addl $49941480, %edx
+ -     0.21    -      -      -     0.77    -      -      -      -     0.02    -      -     movl $2, %ecx
+1.00    -      -      -      -      -      -      -      -      -      -      -      -     cmpl $99882961, %edx
+1.00    -      -      -      -      -      -      -      -      -      -      -      -     jb   .LBB0_1
+ -     0.58    -      -      -     0.22   0.01    -      -      -     0.19    -      -     movl $0, %ecx
+ -     0.21    -      -      -     0.40    -      -      -      -     0.39    -      -     cmpl $120, %eax
+0.19    -      -      -      -      -     0.81    -      -      -      -      -      -     jg   .LBB0_1
+ -      -      -      -      -      -      -      -      -      -      -      -      -     jmp  .LBB0_7
+ -     0.39    -      -      -     0.39    -      -      -      -     0.22    -      -     addl $-73, %eax
+ -     1.00    -      -      -      -      -      -      -      -      -      -      -     imull        $1041204193, %eax, %edx
+0.41    -      -      -      -     0.01    -      -      -      -     0.58    -      -     addl $65075262, %edx
+ -     0.20    -      -      -     0.23    -      -      -      -     0.57    -      -     movl $1, %ecx
+0.80    -      -      -      -      -      -      -      -      -     0.20    -      -     cmpl $130150525, %edx
+0.99    -      -      -      -      -     0.01    -      -      -      -      -      -     jb   .LBB0_1
+ -     0.22    -      -      -     0.77    -      -      -      -     0.01    -      -     movl $2, %ecx
+ -      -      -      -      -     0.41    -      -      -      -     0.59    -      -     cmpl $150, %eax
+ -      -      -      -      -      -     1.00    -      -      -      -      -      -     jg   .LBB0_1
+ -      -      -      -      -      -      -      -      -      -      -      -      -     jmp  .LBB0_7
+ -     0.20    -      -      -     0.01   0.58    -      -      -     0.21    -      -     addl $-93, %eax
+ -     1.00    -      -      -      -      -      -      -      -      -      -      -     imull        $-1944890851, %eax, %edx
+ -      -      -      -      -     0.01    -      -      -      -     0.99    -      -     addl $40518559, %edx
+ -     0.01    -      -      -     0.79    -      -      -      -     0.20    -      -     movl $0, %ecx
+0.98   0.01    -      -      -      -      -      -      -      -     0.01    -      -     cmpl $81037119, %edx
+1.00    -      -      -      -      -      -      -      -      -      -      -      -     jb   .LBB0_1
+ -     0.78    -      -      -     0.20    -      -      -      -     0.02    -      -     movl $1, %ecx
+ -      -      -      -      -     0.02   0.19    -      -      -     0.79    -      -     cmpl $100, %eax
+0.01    -      -      -      -      -     0.99    -      -      -      -      -      -     jg   .LBB0_1
+ -      -     0.33   0.33    -      -     1.00    -      -      -      -     0.34    -     retq
